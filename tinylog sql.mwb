@@ -1,0 +1,173 @@
+create database tinylog;
+use tinylog;
+
+-- TABLA DATOS DE ACUDIENTES
+
+create table acudientes(
+	id_acudiente int primary key auto_increment,
+	tipo_documento int not null,
+	numero_de_documento varchar (10) not null unique,
+    nombres varchar (50) not null,
+    apellidos varchar (50) not null,
+    telefono varchar (10) not null unique,
+    correo varchar (100) not null unique,
+    direccion varchar (10) not null,
+    id_estudiantes int
+    );
+    
+    alter table acudientes
+    add id_estudiantes int;
+    
+    alter table acudientes 
+    add foreign key (id_estudiantes) references estudiantes(id_estudiantes);
+    
+    -- TABLA DATOS DE ESTUDIANTES
+    
+    create table estudiantes(
+	id_estudiantes int primary key auto_increment,
+    tipo_documento varchar (20) not null,
+    numero_documento varchar(20) not null unique, 
+    nombres varchar (50) not null,
+    apellidos varchar (50) not null,
+    fecha_de_nacimineto date not null,
+    tipo_de_sangre varchar(5) not null
+    );
+alter table estudiantes
+add id_Curso int ;
+
+alter table estudiantes 
+add foreign key (id_curso) references curso (id_Curso);
+
+alter table estudiantes 
+add genero varchar (20) not null;
+
+-- TABLA ASISTENCIA
+ 
+create table asistencia(
+	id_asistencia int primary key auto_increment,
+	fecha date not null,
+	estado enum ('presente', 'ausente', 'tarde', 'justificado'), 
+    id_estudiantes int not null,
+    foreign key (id_estudiantes) references estudiantes(id_estudiantes)
+    -- default pero que podria ponerse en este caso
+);
+alter table asistencia 
+add observaciones varchar (255);
+
+select * from asistencia 
+where estado is not null;
+
+-- TABLA CURSOS DEL JARDIN
+
+create table curso(
+id_Curso int primary key auto_increment,
+nombre_curso varchar (50) not null,
+jornada enum('mañana') not null,
+capacidad int not null
+);
+-- TABLA DE EVENTOS
+
+create table evento(
+id_eventos int primary key auto_increment,
+titulo varchar(100) not null,
+descripcion text,
+fecha date not null,
+hora time 
+);
+alter table evento
+add id_calendario int;
+
+alter table evento
+add foreign key (id_calendario) references calendario(id_calendario);
+
+alter table evento
+add creado_por int;
+
+alter table evento
+add foreign key (creado_por) references usuarios(id_usuario);
+
+alter table evento 
+add  id_directivo int;
+
+ALTER TABLE evento
+ADD FOREIGN KEY (id_directivo) 
+REFERENCES directivos(id_directivo);
+
+SHOW CREATE TABLE evento;
+
+alter table evento
+drop foreign key evento_ibfk_2;
+-- TABLA DE JUSTIFICACIONES 
+
+create table justificaciones(
+id_justificaciones int primary key auto_increment,
+id_asistencia int, 
+motivo text not null,
+fecha_de_justificacion date not null,
+foreign key (id_asistencia) references asistencia(id_asistencia)
+);
+
+-- TABLA DE REPORTES 
+
+create table reportes(
+id_reportes int primary key auto_increment,
+tipo varchar(50) not null,
+fecha_de_generacion date not null,
+descripcion text 
+); 
+
+-- TABLA CALENDARIO
+
+create table calendario(
+id_calendario int primary key,-- autoincrement
+dia date not null,
+mes date not null,
+año varchar (20) not null,
+fecha date not null
+);
+-- TABLA ROLES
+
+create table roles(
+id_roles int primary key auto_increment,
+nombre_rol varchar(50) unique not null
+);
+
+-- TABLA USUARIOS
+
+create table usuarios(
+id_usuario int auto_increment primary key,
+correo varchar(100) not null unique,
+contraseña varchar (100)not null,
+id_roles int not null,
+FOREIGN KEY (id_roles) REFERENCES roles(id_roles)
+);
+
+-- TABLA PROFESORES
+
+CREATE TABLE profesores(
+    id_profesor INT PRIMARY KEY AUTO_INCREMENT,
+    tipo_documento VARCHAR(20) NOT NULL,
+    numero_documento VARCHAR(20) NOT NULL UNIQUE,
+    nombres VARCHAR(50) NOT NULL,
+    apellidos VARCHAR(50) NOT NULL,
+    telefono VARCHAR(10) NOT NULL,
+    correo VARCHAR(100) NOT NULL UNIQUE
+);
+
+-- TABLA DIRECTIVOS
+
+CREATE TABLE directivos(
+    id_directivo INT PRIMARY KEY AUTO_INCREMENT,
+    tipo_documento VARCHAR(20) NOT NULL,
+    numero_documento VARCHAR(20) NOT NULL UNIQUE,
+    nombres VARCHAR(50) NOT NULL,
+    apellidos VARCHAR(50) NOT NULL,
+    telefono VARCHAR(10) NOT NULL,
+    correo VARCHAR(100) NOT NULL UNIQUE,
+    cargo VARCHAR(50) NOT NULL
+);
+
+
+
+
+
