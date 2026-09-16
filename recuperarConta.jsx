@@ -1,38 +1,109 @@
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
-export default function RecuperarPassword() {
-  // Función para manejar el envío del formulario
-const handleSubmit = (e) => {
+export default function Recuperar() {
+  const [correo, setCorreo] = useState('');
+  const [codigo, setCodigo] = useState('');
+  const [codigoEnviado, setCodigoEnviado] = useState(false);
+
+  const navigate = useNavigate();
+
+  const enviarCodigo = (e) => {
     e.preventDefault();
-    alert('Código enviado correctamente');
-};
 
-return (
-    <div className="d-flex justify-content-center align-items-center vh-100 bg-light">
-<div className="card shadow p-4" style={{ width: '100%', maxWidth: '400px' }}>
-        <h1 className="text-center h4 mb-2">Recuperar Contraseña</h1>
-        <p className="text-center text-muted mb-4">Ingresa tu correo electrónico para recuperar tu contraseña</p>
+    if (!correo) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Campo vacío',
+        text: 'Por favor, ingresa tu correo electrónico.',
+      });
+      return;
+    }
 
-        <form onSubmit={handleSubmit}>
-<div className="mb-3">
-            <label className="form-label">Correo electrónico</label>
-            <input type="email" className="form-control" placeholder="Ingresa tu correo" required />
+    setCodigoEnviado(true);
+    Swal.fire({
+      icon: 'success',
+      title: '¡Código enviado!',
+      text: 'Revisa tu correo electrónico para obtener el código.',
+    });
+  };
+
+  const verificarCodigo = (e) => {
+    e.preventDefault();
+
+    if (!codigo) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Código vacío',
+        text: 'Por favor, ingresa el código de verificación.',
+      });
+      return;
+    }
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Código verificado',
+      text: 'Ahora puedes establecer tu nueva contraseña.',
+      timer: 1500,
+      showConfirmButton: false,
+    }).then(() => {
+      navigate('/nueva-contrasena');
+    });
+  };
+
+  return (
+    <div className="dashboard-container auth-wrapper">
+      <div className="background-blobs">
+        <div className="blob blob-1"></div>
+        <div className="blob blob-2"></div>
+        <div className="blob blob-3"></div>
+      </div>
+
+      <div className="auth-card">
+        <h1 className="auth-title" style={{ fontSize: "1.4rem" }}>Recuperar Contraseña</h1>
+        <p className="auth-subtitle">
+          Ingresa tu correo electrónico para recuperar tu contraseña
+        </p>
+
+        <form onSubmit={enviarCodigo}>
+          <div className="auth-form-group">
+            <label htmlFor="correo">Correo electrónico</label>
+            <input
+              id="correo"
+              type="email"
+              placeholder="Ingresa tu correo"
+              value={correo}
+              onChange={(e) => setCorreo(e.target.value)}
+              required
+            />
           </div>
-          <button type="submit" className="btn btn-primary w-100 mb-4">Enviar código de verificación</button>
-
-          <div className="mb-3">
-            <label className="form-label">Código de verificación</label>
-            <input type="text" className="form-control" placeholder="Ingresa el código" required />
-          </div>
+          <button type="submit" className="auth-btn-submit" style={{ marginBottom: "15px" }}>
+            Enviar código de verificación
+          </button>
         </form>
 
-        <form action="/nueva-contrasena">
-          <button type="button" className="btn btn-success w-100 mb-3">Nueva Contraseña</button>
-        </form>
+        {codigoEnviado && (
+          <form onSubmit={verificarCodigo}>
+            <div className="auth-form-group">
+              <label htmlFor="codigo">Código de verificación</label>
+              <input
+                id="codigo"
+                type="text"
+                placeholder="Ingresa el código"
+                value={codigo}
+                onChange={(e) => setCodigo(e.target.value)}
+                required
+              />
+            </div>
+            <button type="submit" className="auth-btn-submit">
+              Nueva contraseña
+            </button>
+          </form>
+        )}
 
-        <div className="text-center mt-3">
-          {/* En lugar de etiqueta <a>, usamos Link en React */}
-          <Link to="/" className="text-decoration-none">Volver al Inicio</Link>
+        <div className="auth-footer-link">
+          <Link to="/">Volver al Inicio</Link>
         </div>
       </div>
     </div>
